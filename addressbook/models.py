@@ -1,5 +1,7 @@
-from django.db import models
 import uuid
+
+from django.db import models
+from django.urls import reverse
 from timezone_field import TimeZoneField
 
 # Create your models here.
@@ -25,15 +27,17 @@ class PartyRelation(TimeStampedModel):
     SIBLING = "SIBLING"
     PARTNER = "PARTNER"
 
-    RELATION_CHOICES = (
-        (PARENT, "PARENT"),
-        (SIBLING, "SIBLING"),
-        (PARTNER, "PARTNER")
-    )
+    RELATION_CHOICES = ((PARENT, "PARENT"), (SIBLING, "SIBLING"), (PARTNER, "PARTNER"))
 
-    party_from = models.ForeignKey(to=Party, on_delete=models.CASCADE, related_name="parties_from")
-    party_to = models.ForeignKey(to=Party, on_delete=models.CASCADE, related_name="parties_to")
-    relationship_type = models.CharField(choices=RELATION_CHOICES, max_length=100, default=PARENT)
+    party_from = models.ForeignKey(
+        to=Party, on_delete=models.CASCADE, related_name="parties_from"
+    )
+    party_to = models.ForeignKey(
+        to=Party, on_delete=models.CASCADE, related_name="parties_to"
+    )
+    relationship_type = models.CharField(
+        choices=RELATION_CHOICES, max_length=100, default=PARENT
+    )
 
 
 class Organization(Party):
@@ -46,6 +50,9 @@ class Person(Party):
     full_name = models.CharField(max_length=100)
     given_name = models.CharField(max_length=50)
 
+    def get_absolute_url(self):
+        return reverse("addressbook:person-detail", kwargs={"pk": self.pk})
+
 
 class Address(TimeStampedModel):
     MAIN = "MAIN"
@@ -55,10 +62,12 @@ class Address(TimeStampedModel):
     ADDRESS_TYPE_CHOICES = (
         (MAIN, "MAIN"),
         (INVOICE, "INVOICE"),
-        (DELIVERY, "DELIVERY")
+        (DELIVERY, "DELIVERY"),
     )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    party_id = models.ForeignKey(to=Party, null=False, blank=False, on_delete=models.CASCADE)
+    party = models.ForeignKey(
+        to=Party, null=False, blank=False, on_delete=models.CASCADE
+    )
     line_one = models.CharField(max_length=100, null=True, blank=True)
     line_two = models.CharField(max_length=100, null=True, blank=True)
     line_three = models.CharField(max_length=100, null=True, blank=True)
@@ -67,6 +76,7 @@ class Address(TimeStampedModel):
     postal_code = models.CharField(max_length=20, null=True, blank=True)
     post_office_box = models.CharField(max_length=50, null=True, blank=True)
     country_code = models.CharField(max_length=2)
-    address_type = models.CharField(max_length=20, choices=ADDRESS_TYPE_CHOICES, default=MAIN)
+    address_type = models.CharField(
+        max_length=20, choices=ADDRESS_TYPE_CHOICES, default=MAIN
+    )
     timezone = TimeZoneField(null=True, blank=True)
-

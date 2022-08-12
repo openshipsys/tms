@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load i18n carbondesign %}
+
+{% block content %}
+  {% include "messages_partial.html" %}
+
+  <h3 style="margin-bottom: 2rem">Person</h3>
+
+  <div style="margin-bottom: 2rem">
+    <p>Unique-Id: {{ object.uuid }}</p>
+    <p>System-Id: {{ object.id }}</p>
+  </div>
+
+  <div style="width: 640px">
+      {% TextInput form.full_name %}
+      {% TextInput form.given_name %}
+      {% TextInput form.short_name %}
+
+      {% url 'addressbook:person-update' object.id as url %}
+      {% Button astag='a' href=url variant="secondary" %}
+        {% trans "Edit" %}
+      {% endButton %}
+      {% Button variant="secondary" hx-get=url hx-target="#hx-form" %}
+        {% trans "Edit" %}
+      {% endButton %}
+  </div>
+{% endblock %}

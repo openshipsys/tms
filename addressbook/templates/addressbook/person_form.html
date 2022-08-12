@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n carbondesign %}
+{% block content %}
+  {% include "messages_partial.html" %}
+
+  <h3 style="margin-bottom: 2rem">Person</h3>
+
+  <div style="margin-bottom: 2rem">
+    <p>Unique-Id: {{ object.uuid }}</p>
+    <p>System-Id: {{ object.id }}</p>
+  </div>
+
+
+    <form hx-post={% url 'addressbook:person-update' object.id %} hx-target="#hx-form" style="width:640px">
+      {% csrf_token %}
+          {% TextInput form.full_name %}
+          {% TextInput form.given_name %}
+          {% TextInput form.short_name %}
+              {% Button type="submit" %}
+            {% trans "Save" %}
+          {% endButton %}
+    </form>
+{% endblock %}

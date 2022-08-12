@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load i18n carbondesign %}
+
+{% block content %}
+      {% include "messages_partial.html" %}
+        {% url 'addressbook:person-update' 1 as url %}
+      {% Button variant="secondary" hx-get=url hx-target="#hx-form" %}
+        {% trans "Edit" %}
+      {% endButton %}
+{% endblock %}
